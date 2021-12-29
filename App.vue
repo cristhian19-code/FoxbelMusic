@@ -5,7 +5,7 @@
       <div class="header__main">
         <div class="header__main-inputs">
           <div class="header__main-search">
-            <input v-model="search" @keyup.enter="handleSearch()" type="text" :placeholder="`Buscar por ${select}`">
+            <input v-model="search" @keyup.enter="handleSearch()" type="text" placeholder="Buscar">
             <i class="fas fa-search"></i>
           </div>
           <button class="btn__sidebar">
@@ -31,7 +31,7 @@
 </template>
 <script>
 import MusicPlayerVue from './components/MusicPlayer.vue'
-import SidebarVue from './components/Sidebar.vue'
+import SidebarVue from './components/Sidebar/Sidebar.vue'
 import {ref, provide} from 'vue'
 
 export default {
@@ -40,37 +40,28 @@ export default {
     MusicPlayerVue
   },
   setup(props) {
-    
     const list_music = ref([]);
     const search = ref('');
-
     const width = ref(window.innerWidth);
     const data_music = ref({});
-    const select = ref('Recientes');
-    
+
     provide('data_music', data_music);
     provide('list_music', list_music);
     provide('width', width);
-    provide('select', select);
 
     return {
       list_music,
       search,
       width,
-      select
     }
   },
   mounted() {
-    //obtener la medida de la pantalla
     window.onresize = ()=>{
       this.width = window.innerWidth;
     }
-
-    //boton para abrir sidebar
     const menu = document.querySelector('.btn__sidebar');
     menu.addEventListener('click', ()=>{
       document.getElementById('sidebar').classList.toggle('active');
-      menu.classList.toggle('animation');
     })
   },
   methods: {
@@ -86,23 +77,9 @@ export default {
               "x-rapidapi-key": "c750f476e6mshf8d1c90e5b2142bp17510cjsn09f1faa45bb3"
             }
           })
-
           const list = await res.json();
-          const filter = list.data.filter(item => 
-            item[this.select == 'Álbums' ? 'album' : 'artist'][this.select == 'Álbums' ? 'title' : 'name'].toLowerCase().includes(this.search.toLowerCase())
-          );
-
-          const data = filter.map(item => {
-            return  {
-              id: item.id,
-              artist: item.artist.name,
-              title: this.select == 'Álbums' ? item.album.title : item.title,
-              image: item.album.cover_big,
-              preview: item.preview,
-            }
-          })
-
-          this.list_music = data;
+          const filter = list.data.filter(item => item.album.title.toLowerCase().includes(this.search.toLowerCase()));
+          this.list_music = filter;
         } catch (error) {
         
         }
@@ -121,18 +98,7 @@ export default {
       });
 
       const playlist = await res.json();
-      const data = playlist.tracks.data.slice(0,12)
-      
-
-      this.list_music = await data.map(item => {
-        return {
-          id: item.id,
-          title: item.album.title,
-          artist: item.artist.name,
-          image: item.album.cover_big,
-          preview: item.preview,
-        }
-      });
+      this.list_music = playlist.tracks.data.slice(0,12);
     },
   },
   created() {
@@ -232,15 +198,14 @@ main{
   justify-content: center;
   border: none;
   position: relative;
-  overflow: hidden;
   margin-left: 20px;
+  font-size: 30px;
 }
 
 .btn__sidebar span{
   height: 4px;
   width: 30px;
   position: absolute;
-  transition: 0.5s;
   background-color: var(--color-ligth-prim);
 }
 
@@ -252,23 +217,10 @@ main{
   transform: translateY(8px);
 }
 
-.btn__sidebar.animation span:nth-child(1){
-  transition-delay: .1s;
-  transform: translateY(0) rotate(45deg);
-}
-.btn__sidebar.animation span:nth-child(2){
-  transition-delay: .2s;
-  transform: translateY(0) rotate(315deg);
-}
-.btn__sidebar.animation span:nth-child(3){
-  transform: translateX(50px);
-}
-
 .header__main-user{
   display: flex;
   align-items: center;
   gap: 12px;
-  width: 150px;
 }
 
 .header__main-user>i{
@@ -293,8 +245,6 @@ main{
     'player';
   }
 
-  .btn__sidebar{
-    display: flex;
-  }
+  
 }
 </style>

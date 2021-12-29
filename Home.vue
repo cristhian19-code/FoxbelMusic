@@ -5,7 +5,7 @@
     <div class="result">
       <h1>Resultados</h1>
       <div class="result__list">
-        <CardMusicVue v-for="item in list_music" :key="item.id" :title="item.title" :artist="item.artist" :image="item.image" :preview="item.preview"/>
+        <CardMusicVue v-for="item in list_music" :key="item.id" :title="item.album.title" :artist="item.artist.name" :image="item.album.cover_big" :preview="item.preview"/>
       </div>
     </div>
   </div>
@@ -18,13 +18,10 @@ import CardMusicVue from '../components/CardMusic.vue'
 
 export default {
   name: 'Home',
-  setup() {
+  setup(props) {
     const list_music = inject('list_music');
-    const select = inject('select');
-    
     return {
-      list_music,
-      select
+      list_music
     }
   },
   components: {
