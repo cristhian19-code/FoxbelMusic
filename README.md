@@ -18,3 +18,4 @@ npm run build
 ### Application link
 
 [Repo Foxbel Music](https://github.com/cristhian19-code/FoxbelMusic.git)
+[Link Foxbel Music](https://foxbel-music-green.vercel.app/#/)
